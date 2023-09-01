@@ -6,16 +6,8 @@ IFS=$'\n\t'
 main() {
   set -x
 
-  local log_file
-
-  # Log all output from this script.
-  log_file=/var/log/web_server_bootstrap.log
-  exec > >(tee -a "$log_file")
-  exec 2> >(tee -a "$log_file")
-
-  # Install Dokku.
-  wget -NP . https://dokku.com/install/v0.31.2/bootstrap.sh
-  sudo DOKKU_TAG=v0.31.2 bash bootstrap.sh
+  enable_logging
+  setup_dokku
 
   # TODO Once bootstrapped, do something like this to update DNS:
   #
@@ -36,6 +28,21 @@ main() {
   # Also see API docs at https://open-api.netlify.com/#tag/dnsZone
   # Note: no decent Netlify Terraform provider exists, so using API directly
   # seems best.
+}
+
+
+enable_logging() {
+  # Log all output from this script.
+  local log_file
+  log_file=/var/log/web_server_bootstrap.log
+  exec > >(tee -a "$log_file")
+  exec 2> >(tee -a "$log_file")
+}
+
+
+setup_dokku() {
+  wget -NP . https://dokku.com/install/v0.31.2/bootstrap.sh
+  sudo DOKKU_TAG=v0.31.2 bash bootstrap.sh
 }
 
 
