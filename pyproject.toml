@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "personal-infra"
+version = "0.0.1"
+description = ""
+authors = ["Bob Whitelock <bob.whitelock1@gmail.com>"]
+readme = "README.md"
+packages = []
+
+[tool.poetry.dependencies]
+python = "^3.9"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
