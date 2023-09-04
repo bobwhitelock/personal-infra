@@ -38,32 +38,14 @@ setup_data_warehouse_app() {
   # TODO Change this temporary password.
   dokku config:set data-warehouse DATASETTE_BOB_PASSWORD_HASH='pbkdf2_sha256$480000$03a564f6cd7cf7bbc559802d05491e7e$fcLBSxVR/Oa4Pl/rIG50MjEIu9WsKy+9qm4d7YJBCjE=' --no-restart
 
-  # TODO I don't think this fully works as the app isn't running yet, need a
-  # placeholder app or to run this after first push or something.
+  # TODO This doesn't work as the app isn't running yet, need a placeholder app
+  # or to run this after first push or something.
   dokku plugin:install https://github.com/dokku/dokku-letsencrypt.git
-  dokku letsencrypt:set data-warehouse email bob.whitelock1+data-warehouse@gmail.com
-  dokku letsencrypt:enable data-warehouse
-  dokku letsencrypt:cron-job --add data-warehouse
+  # dokku letsencrypt:set data-warehouse email bob.whitelock1+data-warehouse@gmail.com
+  # dokku letsencrypt:enable data-warehouse
+  # dokku letsencrypt:cron-job --add data-warehouse
 
-  # TODO Once bootstrapped, do something like this to update DNS:
-  #
-  # Find DNS zone ID:
-  # $ curl -H "User-Agent: personal-infra (bob.whitelock1@gmail.com)" -H "Authorization: Bearer $NETLIFY_TOKEN" https://api.netlify.com/api/v1/dns_zones | jq .
-  #
-  # Find bobwhitelock.co.uk zone and then view records:
-  # $ curl -H "User-Agent: personal-infra (bob.whitelock1@gmail.com)" -H "Authorization: Bearer $NETLIFY_TOKEN" https://api.netlify.com/api/v1/dns_zones/59736a186f4c5015cc28e7af/dns_records | jq .
-  #
-  # Delete the old record:
-  # $ curl -H "User-Agent: personal-infra (bob.whitelock1@gmail.com)" -H "Authorization: Bearer $NETLIFY_TOKEN" -X DELETE https://api.netlify.com/api/v1/dns_zones/59736a186f4c5015cc28e7af/dns_records/604aa7945e906808f7b3cb8d
-  #
-  # Create new record:
-  # $ curl -H "User-Agent: personal-infra (bob.whitelock1@gmail.com)" -H "Authorization: Bearer $NETLIFY_TOKEN" -H 'Content-Type: application/json' -X POST -d '{"type":"A","hostname": "data.bobwhitelock.co.uk", "value": "178.79.184.237", "ttl": 60}' https://api.netlify.com/api/v1/dns_zones/59736a186f4c5015cc28e7af/dns_records
-  #
-  # And message somewhere to indicate bootstrapping complete?
-  #
-  # Also see API docs at https://open-api.netlify.com/#tag/dnsZone
-  # Note: no decent Netlify Terraform provider exists, so using API directly
-  # seems best.
+  # Also need to run libexec/replace_netlify_dns_record.py.
 }
 
 

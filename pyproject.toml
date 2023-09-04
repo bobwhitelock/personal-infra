@@ -8,7 +8,10 @@ packages = []
 
 [tool.poetry.dependencies]
 python = "^3.9"
+requests = "^2.31.0"
 
+[tool.poetry.group.dev.dependencies]
+types-requests = "^2.31.0.2"
 
 [build-system]
 requires = ["poetry-core"]
