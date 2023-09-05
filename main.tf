@@ -52,8 +52,3 @@ resource "linode_instance" "web_server" {
 output "ip" {
   value = local.web_server_ip
 }
-
-output "data_warehouse_dokku_remote" {
-  # TODO Automatically set this as the remote on GitHub.
-  value = "${replace(local.web_server_ip, ".", "-")}.ip.linodeusercontent.com:data-warehouse"
-}
