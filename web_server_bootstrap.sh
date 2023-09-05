@@ -52,12 +52,15 @@ setup_dokku() {
 
 
 setup_data_warehouse_app() {
-  # TODO DRY up repeated uses of same hostname, app name, and other stuff in
-  # here.
-  dokku apps:create data-warehouse
-  dokku domains:set data-warehouse data.bobwhitelock.co.uk
+  local app_name hostname replace_dns_record
+  app_name=data-warehouse
+  hostname=data.bobwhitelock.co.uk
+  replace_dns_record=replace_netlify_dns_record.py
 
-  dokku config:set data-warehouse \
+  dokku apps:create "$app_name"
+  dokku domains:set "$app_name" "$hostname"
+
+  dokku config:set "$app_name" \
     DATASETTE_BOB_PASSWORD_HASH="$DATASETTE_BOB_PASSWORD_HASH" \
     --no-restart
 
@@ -65,11 +68,11 @@ setup_data_warehouse_app() {
     -H "Authorization: Bearer $LINODE_TOKEN" \
     "https://api.linode.com/v4/linode/stackscripts/$REPLACE_NETLIFY_DNS_RECORD_STACKSCRIPT_ID" | \
     jq .script --raw-output \
-    > replace_netlify_dns_record.py
-  chmod +x replace_netlify_dns_record.py
+    > "$replace_dns_record"
+  chmod +x "$replace_dns_record"
   # TODO needed?
   export NETLIFY_TOKEN
-  ./replace_netlify_dns_record.py "{\"type\":\"A\",\"hostname\": \"data.bobwhitelock.co.uk\", \"value\": \"$WEB_SERVER_PUBLIC_IP\", \"ttl\": 60}"
+  "./$replace_dns_record" "{\"type\":\"A\",\"hostname\": \"$hostname\", \"value\": \"$WEB_SERVER_PUBLIC_IP\", \"ttl\": 60}"
 
   # Wait for DNS update to propagate.
   # TODO Handle this better than just a magic sleep. Is this needed at all?
@@ -80,7 +83,7 @@ setup_data_warehouse_app() {
     -H "Accept: application/vnd.github+json" \
     -H "Authorization: Bearer $GITHUB_TOKEN" \
     -H "X-GitHub-Api-Version: 2022-11-28" \
-    https://api.github.com/repos/bobwhitelock/data-warehouse/actions/workflows/ci_cd.yml/dispatches \
+    "https://api.github.com/repos/bobwhitelock/$app_name/actions/workflows/ci_cd.yml/dispatches" \
     -d '{"ref": "main"}'
 
   # Wait for deploy to finish.
@@ -88,9 +91,9 @@ setup_data_warehouse_app() {
   sleep 30
 
   dokku plugin:install https://github.com/dokku/dokku-letsencrypt.git
-  dokku letsencrypt:set data-warehouse email bob.whitelock1+data-warehouse@gmail.com
-  dokku letsencrypt:enable data-warehouse
-  dokku letsencrypt:cron-job --add data-warehouse
+  dokku letsencrypt:set "$app_name" email "bob.whitelock1+$app_name@gmail.com"
+  dokku letsencrypt:enable "$app_name"
+  dokku letsencrypt:cron-job --add "$app_name"
 }
 
 
