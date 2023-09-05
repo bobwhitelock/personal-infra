@@ -1,7 +1,4 @@
 
-# Prerequisites:
-# `LINODE_TOKEN` env var must be set.
-
 terraform {
   required_providers {
     linode = {
