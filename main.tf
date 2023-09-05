@@ -19,7 +19,15 @@ terraform {
   }
 }
 
+variable "GITHUB_TOKEN" {
+  type = string
+}
+
 variable "LINODE_TOKEN" {
+  type = string
+}
+
+variable "NETLIFY_TOKEN" {
   type = string
 }
 
@@ -37,6 +45,13 @@ resource "linode_stackscript" "web_server_bootstrap" {
   images      = [local.web_server_image]
 }
 
+resource "linode_stackscript" "replace_netlify_dns_record" {
+  label       = "replace_netlify_dns_record"
+  description = "Helper script; replaces a Netlify DNS record"
+  script      = file("libexec/replace_netlify_dns_record.py")
+  images      = [local.web_server_image]
+}
+
 resource "linode_instance" "web_server" {
   label           = "web_server"
   image           = local.web_server_image
@@ -45,7 +60,13 @@ resource "linode_instance" "web_server" {
   authorized_keys = [local.personal_ssh_public_key]
   stackscript_id  = linode_stackscript.web_server_bootstrap.id
   stackscript_data = {
-    PERSONAL_SSH_PUBLIC_KEY = local.personal_ssh_public_key
+    PERSONAL_SSH_PUBLIC_KEY                   = local.personal_ssh_public_key
+    REPLACE_NETLIFY_DNS_RECORD_STACKSCRIPT_ID = linode_stackscript.replace_netlify_dns_record.id
+
+    GITHUB_TOKEN__PASSWORD  = var.GITHUB_TOKEN
+    _LINODE_TOKEN__PASSWORD = var.LINODE_TOKEN
+    NETLIFY_TOKEN__PASSWORD = var.NETLIFY_TOKEN
+
   }
 }
 
