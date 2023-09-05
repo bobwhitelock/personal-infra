@@ -52,13 +52,15 @@ setup_dokku() {
 
 
 setup_data_warehouse_app() {
-  local app_name hostname replace_dns_record
+  local app_name hostname placeholder_hostname replace_dns_record
   app_name=data-warehouse
   hostname=data.bobwhitelock.co.uk
+  placeholder_hostname="placeholder-$(openssl rand -hex 5).bobwhitelock.co.uk"
   replace_dns_record=replace_netlify_dns_record.py
 
   dokku apps:create "$app_name"
   dokku domains:set "$app_name" "$hostname"
+  dokku domains:add "$app_name" "$placeholder_hostname"
 
   dokku config:set "$app_name" \
     DATASETTE_BOB_PASSWORD_HASH="$DATASETTE_BOB_PASSWORD_HASH" \
@@ -73,6 +75,9 @@ setup_data_warehouse_app() {
   # TODO needed?
   export NETLIFY_TOKEN
   "./$replace_dns_record" "{\"type\":\"A\",\"hostname\": \"$hostname\", \"value\": \"$WEB_SERVER_PUBLIC_IP\", \"ttl\": 60}"
+  # TODO This will clog up my DNS with a new junk placeholder record on every
+  # build - need to remove the old ones.
+  "./$replace_dns_record" "{\"type\":\"A\",\"hostname\": \"$placeholder_hostname\", \"value\": \"$WEB_SERVER_PUBLIC_IP\", \"ttl\": 60}"
 
   # Wait for DNS update to propagate.
   # TODO Handle this better than just a magic sleep. Is this needed at all?
