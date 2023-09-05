@@ -11,6 +11,7 @@ IFS=$'\n\t'
 # Underscore suffix as "LINODE" namespace is reserved.
 # <UDF name="_LINODE_TOKEN__PASSWORD" label="Linode API token" />
 # <UDF name="NETLIFY_TOKEN__PASSWORD" label="Netlify API token" />
+# <UDF name="DATASETTE_BOB_PASSWORD_HASH" label="Password hash for my data-warehouse user" />
 
 
 GITHUB_TOKEN="$GITHUB_TOKEN__PASSWORD"
@@ -56,9 +57,9 @@ setup_data_warehouse_app() {
   dokku apps:create data-warehouse
   dokku domains:set data-warehouse data.bobwhitelock.co.uk
 
-  # TODO Change this temporary password.
-  # shellcheck disable=SC2016
-  dokku config:set data-warehouse DATASETTE_BOB_PASSWORD_HASH='pbkdf2_sha256$480000$03a564f6cd7cf7bbc559802d05491e7e$fcLBSxVR/Oa4Pl/rIG50MjEIu9WsKy+9qm4d7YJBCjE=' --no-restart
+  dokku config:set data-warehouse \
+    DATASETTE_BOB_PASSWORD_HASH="$DATASETTE_BOB_PASSWORD_HASH" \
+    --no-restart
 
   curl \
     -H "Authorization: Bearer $LINODE_TOKEN" \

@@ -28,6 +28,10 @@ variable "NETLIFY_TOKEN" {
   type = string
 }
 
+variable "DATASETTE_BOB_PASSWORD_HASH" {
+  type = string
+}
+
 locals {
   web_server_image = "linode/ubuntu22.04"
   web_server_ip    = linode_instance.web_server.ip_address
@@ -60,10 +64,10 @@ resource "linode_instance" "web_server" {
     PERSONAL_SSH_PUBLIC_KEY                   = local.personal_ssh_public_key
     REPLACE_NETLIFY_DNS_RECORD_STACKSCRIPT_ID = linode_stackscript.replace_netlify_dns_record.id
 
-    GITHUB_TOKEN__PASSWORD  = var.GITHUB_TOKEN
-    _LINODE_TOKEN__PASSWORD = var.LINODE_TOKEN
-    NETLIFY_TOKEN__PASSWORD = var.NETLIFY_TOKEN
-
+    GITHUB_TOKEN__PASSWORD      = var.GITHUB_TOKEN
+    _LINODE_TOKEN__PASSWORD     = var.LINODE_TOKEN
+    NETLIFY_TOKEN__PASSWORD     = var.NETLIFY_TOKEN
+    DATASETTE_BOB_PASSWORD_HASH = var.DATASETTE_BOB_PASSWORD_HASH
   }
 }
 
