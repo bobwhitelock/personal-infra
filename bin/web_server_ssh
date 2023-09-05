@@ -1,0 +1,11 @@
+#!/bin/bash
+set -Eeuo pipefail
+IFS=$'\n\t'
+
+
+main() {
+  ssh root@"$(terraform output | rg ip | cut -d'=' -f2 | xargs)"
+}
+
+
+main "$@"
