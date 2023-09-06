@@ -4,7 +4,10 @@ IFS=$'\n\t'
 
 
 main() {
-  ssh root@"$(terraform output | rg ip | cut -d'=' -f2 | xargs)"
+  local ip
+  ip="$(terraform output | rg ip | cut -d'=' -f2 | xargs)"
+  ssh-keyscan -H "$ip" >> ~/.ssh/known_hosts
+  ssh "root@$ip"
 }
 
 
