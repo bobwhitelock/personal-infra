@@ -7,7 +7,8 @@ main() {
   local ip
   ip="$(terraform output | rg ip | cut -d'=' -f2 | xargs)"
   ssh-keyscan -H "$ip" >> ~/.ssh/known_hosts
-  ssh "root@$ip"
+  # shellcheck disable=SC2029
+  ssh "root@$ip" "$@"
 }
 
 
