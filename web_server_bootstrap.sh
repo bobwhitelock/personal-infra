@@ -48,6 +48,9 @@ setup_dokku() {
 
   echo "$PERSONAL_SSH_PUBLIC_KEY" | dokku ssh-keys:add personal
   echo "$GITHUB_DEPLOY_SSH_PUBLIC_KEY" | dokku ssh-keys:add github_deploy
+
+  # Needed so getting buildpacks from GitHub works.
+  ssh-keyscan -H github.com >> ~dokku/.ssh/known_hosts
 }
 
 
@@ -61,6 +64,9 @@ setup_data_warehouse_app() {
   dokku apps:create "$app_name"
   dokku domains:set "$app_name" "$hostname"
   dokku domains:add "$app_name" "$placeholder_hostname"
+
+  dokku buildpacks:set data-warehouse https://github.com/moneymeets/python-poetry-buildpack.git
+  dokku buildpacks:add data-warehouse heroku/python
 
   dokku config:set "$app_name" \
     DATASETTE_BOB_PASSWORD_HASH="$DATASETTE_BOB_PASSWORD_HASH" \
