@@ -44,7 +44,7 @@ enable_logging() {
 
 setup_dokku() {
   wget -NP . https://dokku.com/install/v0.31.2/bootstrap.sh
-  sudo DOKKU_TAG=v0.31.2 bash bootstrap.sh
+  bash bootstrap.sh
 
   echo "$PERSONAL_SSH_PUBLIC_KEY" | dokku ssh-keys:add personal
   echo "$GITHUB_DEPLOY_SSH_PUBLIC_KEY" | dokku ssh-keys:add github_deploy
