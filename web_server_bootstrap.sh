@@ -7,6 +7,7 @@ IFS=$'\n\t'
 #
 # <UDF name="PERSONAL_SSH_PUBLIC_KEY" label="Personal SSH public key, for pushing to Dokku from local machine" />
 # <UDF name="REPLACE_NETLIFY_DNS_RECORD_STACKSCRIPT_ID" label="Stackscript ID for libexec/replace_netlify_dns_record.py" />
+# <UDF name="LOG_FILE" label="Log file for this script" />
 # <UDF name="GITHUB_TOKEN__PASSWORD" label="GitHub API token" />
 # Underscore suffix as "LINODE" namespace is reserved.
 # <UDF name="_LINODE_TOKEN__PASSWORD" label="Linode API token" />
@@ -27,18 +28,28 @@ main() {
   set -x
 
   enable_logging
+  update_system
   setup_dokku
 
   setup_data_warehouse_app
+
+  reboot -h now
 }
 
 
 enable_logging() {
   # Log all output from this script.
-  local log_file
-  log_file=/var/log/web_server_bootstrap.log
-  exec > >(tee -a "$log_file")
-  exec 2> >(tee -a "$log_file")
+  exec > >(tee -a "$LOG_FILE")
+  exec 2> >(tee -a "$LOG_FILE")
+}
+
+
+update_system() {
+  export DEBIAN_FRONTEND=noninteractive
+  apt-get update
+  apt-get upgrade -y
+  apt-get autoremove
+  apt-get autoclean
 }
 
 
