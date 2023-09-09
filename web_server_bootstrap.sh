@@ -85,10 +85,6 @@ setup_data_warehouse_app() {
   # build - need to remove the old ones.
   "./$replace_dns_record" "{\"type\":\"A\",\"hostname\": \"$placeholder_hostname\", \"value\": \"$WEB_SERVER_PUBLIC_IP\", \"ttl\": 60}"
 
-  # Wait for DNS update to propagate.
-  # TODO Handle this better than just a magic sleep. Is this needed at all?
-  sleep 90
-
   curl -L \
     -X POST \
     -H "Accept: application/vnd.github+json" \
@@ -96,10 +92,6 @@ setup_data_warehouse_app() {
     -H "X-GitHub-Api-Version: 2022-11-28" \
     "https://api.github.com/repos/bobwhitelock/$app_name/actions/workflows/ci_cd.yml/dispatches" \
     -d '{"ref": "main"}'
-
-  # Wait for deploy to finish.
-  # TODO Handle this better than just a magic sleep, and handle deploy failing.
-  sleep 30
 
   dokku plugin:install https://github.com/dokku/dokku-letsencrypt.git
   dokku letsencrypt:set "$app_name" email "bob.whitelock1+$app_name@gmail.com"
