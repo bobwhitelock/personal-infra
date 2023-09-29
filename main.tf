@@ -5,6 +5,10 @@ terraform {
       source  = "linode/linode"
       version = "2.7.1"
     }
+    aws = {
+      source  = "hashicorp/aws"
+      version = "5.18.1"
+    }
   }
 
   cloud {
@@ -14,6 +18,12 @@ terraform {
       name = "personal-infra"
     }
   }
+}
+
+provider "aws" {
+  # Use Ireland as S3 pricing here looks the same as `us-east-1` (whereas
+  # London pricing is not), but usually has better latency for me.
+  region = "eu-west-1"
 }
 
 variable "GITHUB_TOKEN" {
@@ -29,6 +39,14 @@ variable "NETLIFY_TOKEN" {
 }
 
 variable "DATASETTE_BOB_PASSWORD_HASH" {
+  type = string
+}
+
+variable "AWS_ACCESS_KEY_ID" {
+  type = string
+}
+
+variable "AWS_SECRET_ACCESS_KEY" {
   type = string
 }
 
@@ -69,6 +87,10 @@ resource "linode_instance" "web_server" {
     NETLIFY_TOKEN__PASSWORD     = var.NETLIFY_TOKEN
     DATASETTE_BOB_PASSWORD_HASH = var.DATASETTE_BOB_PASSWORD_HASH
   }
+}
+
+resource "aws_s3_bucket" "personal_data" {
+  bucket = "bobwhitelock-personal-data"
 }
 
 output "ip" {
