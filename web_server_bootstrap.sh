@@ -8,7 +8,7 @@ IFS=$'\n\t'
 # <UDF name="PERSONAL_SSH_PUBLIC_KEY" label="Personal SSH public key, for pushing to Dokku from local machine" />
 # <UDF name="REPLACE_NETLIFY_DNS_RECORD_STACKSCRIPT_ID" label="Stackscript ID for libexec/replace_netlify_dns_record.py" />
 # <UDF name="GITHUB_TOKEN__PASSWORD" label="GitHub API token" />
-# Underscore suffix as "LINODE" namespace is reserved.
+# Underscore prefix as "LINODE" namespace is reserved.
 # <UDF name="_LINODE_TOKEN__PASSWORD" label="Linode API token" />
 # <UDF name="NETLIFY_TOKEN__PASSWORD" label="Netlify API token" />
 # <UDF name="DATASETTE_BOB_PASSWORD_HASH" label="Password hash for my data-warehouse user" />
