@@ -93,6 +93,14 @@ resource "aws_s3_bucket" "personal_data" {
   bucket = "bobwhitelock-personal-data"
 }
 
+resource "aws_s3_bucket_versioning" "personal_data_versioning" {
+  bucket = aws_s3_bucket.personal_data.id
+
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
 output "ip" {
   value = local.web_server_ip
 }
